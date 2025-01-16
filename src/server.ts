@@ -25,15 +25,23 @@ connectDB()
 const server = express()
 
 // Permitir conexiones
+const allowedOrigins = [process.env.FRONTEND_URL, 'http://localhost:4000'];
+
 const corsOptions: CorsOptions = {
-    origin: function (origin, callback) {
-        if (origin === process.env.FRONTEND_URL) {
-            callback(null, true)
-        }else{
-            callback(new Error('Error de CORS'))
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
         }
-    }
+
+        if (!origin) {
+            return callback(null, true)
+        }
+
+        return callback(new Error('Not allowed by CORS'))
+    },
 }
+
+server.use(cors(corsOptions))
 
 server.use(cors(corsOptions))
 
